@@ -1,5 +1,6 @@
 import "./style.css";
 import Phaser from "phaser";
+import bgImage from './assets/money.png';
 
 const sizes = {
   width: 500,
@@ -14,7 +15,7 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("bg","/assets/bg.png")
+    this.load.image("bg", bgImage);
   }
 
   create() {
@@ -30,7 +31,7 @@ const config = {
   type: Phaser.WEBGL,
   width: sizes.width,
   height: sizes.height,
-  canvas: document.getElementById("gameCanvas"),
+  canvas: gameCanvas,
   physics: {
     default: "arcade",
     arcade: {

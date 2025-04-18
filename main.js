@@ -2,8 +2,8 @@ import "./style.css";
 import Phaser from "phaser";
 
 const sizes = {
-  width: 500,
-  height: 500,
+  width: 1000,
+  height: 1000,
 };
 
 const speedDown = 300
@@ -18,7 +18,7 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(0,0,"bg").setOrigin(0,0)
+    this.add.image(0,0,"bg").setOrigin(0,)
   }
 
   update() {

@@ -14,7 +14,7 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("bg","bg.png")
+    this.load.image("bg","/assets/bg.png")
   }
 
   create() {

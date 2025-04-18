@@ -1,6 +1,6 @@
 import "./style.css";
 import Phaser from "phaser";
-import bgImage from './assets/money.png';
+import bgImage from './assets/bg.png';
 
 const sizes = {
   width: 500,

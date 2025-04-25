@@ -4,8 +4,8 @@ import bgImage from './assets/bg.png';
 import basketImage from './assets/basket.png';
 
 const sizes = {
-  width: 500,
-  height: 500,
+  width: 1536,
+  height: 1024,
 };
 
 const speedDown = 300

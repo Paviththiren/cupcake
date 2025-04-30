@@ -7,13 +7,25 @@ import basketImage from './assets/basket.png';
 import flourImage from './assets/ingredients/flour.png';
 import sugarImage from './assets/ingredients/sugar.png';
 import eggImage from './assets/ingredients/eggs.png';
+import QRCode from 'qrcode';
 
+function generateQRCode(recipe) {
+  const recipeText = `Flour: ${recipe.flour}, Sugar: ${recipe.sugar}, Egg: ${recipe.egg}`;
+  const canvas = document.createElement('canvas');
+  document.body.appendChild(canvas);
+
+  QRCode.toCanvas(canvas, recipeText, { width: 200 }, function (error) {
+    if (error) console.error(error);
+    console.log('QR code generated!');
+  });
+}
 const sizes = {
-  width: 1536,
-  height: 1024,
+  width: 1152,
+  height: 768,
 };
 
-const speedDown = 300;
+const speedDown = 50;
+const playerMovementSpeed = 300;
 
 const ingredientsList = [
   { key: "flour", image: flourImage },
@@ -26,13 +38,13 @@ class GameScene extends Phaser.Scene {
     super("scene-game");
     this.player;
     this.cursor;
-    this.playerSpeed = speedDown + 50;
+    this.playerSpeed = playerMovementSpeed + 50;
 
     this.fallingIngredients;
     this.recipe = {
       flour: 0,
       sugar: 0,
-      egg: 0,
+      egg: 1,
     };
     this.recipeText;
   }
@@ -40,6 +52,7 @@ class GameScene extends Phaser.Scene {
   preload() {
     this.load.image("bg", bgImage);
     this.load.image("basket", basketImage);
+    this.load.image("scroll",)
 
     for (const ingredient of ingredientsList) {
       this.load.image(ingredient.key, ingredient.image);
@@ -47,9 +60,9 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(0, 0, "bg").setOrigin(0, 0);
+    this.add.image(0, 0, "bg").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height);
 
-    this.player = this.physics.add.image(700, 800, "basket").setOrigin(0, 0);
+    this.player = this.physics.add.image(700, 600, "basket").setOrigin(0, 0);
     this.player.body.allowGravity = false;
     this.player.setCollideWorldBounds(true);
 
@@ -94,6 +107,10 @@ class GameScene extends Phaser.Scene {
       // Rotate slowly
       const rotationSpeed = ingredient.getData('rotationSpeed');
       ingredient.rotation += rotationSpeed;
+
+      if (ingredient.y > 650){
+        ingredient.destroy();
+      }
     });
   }
 
@@ -109,8 +126,9 @@ class GameScene extends Phaser.Scene {
     ingredient.setBounce(0.5);
 
     // Juicy extras
-    ingredient.setData('rotationSpeed', Phaser.Math.FloatBetween(0.005, 0.01)); // slow spin
-    ingredient.setData('wobbleSpeed', Phaser.Math.FloatBetween(0.002, 0.004)); // small side wobble
+    ingredient.setData('rotationSpeed', Phaser.Math.FloatBetween(0.000, 0.00)); // slow spin
+    ingredient.setData('wobbleSpeed', Phaser.Math.FloatBetween(0.000, 0.000)); // small side wobble
+
   }
 
   catchIngredient(player, ingredient) {
@@ -120,12 +138,14 @@ class GameScene extends Phaser.Scene {
       this.updateRecipeText();
     }
     ingredient.destroy(); // Remove the caught ingredient
+    if (this.recipe.flour >= 2 && this.recipe.sugar >= 2 && this.recipe.egg >= 2) {
+      generateQRCode(this.recipe);
+    }
   }
 
   updateRecipeText() {
-    this.recipeText.setText(
-      `Recipe:\nFlour: ${this.recipe.flour}\nSugar: ${this.recipe.sugar}\nEgg: ${this.recipe.egg}`
-    );
+    const text = `Recipe:<br>Flour: ${this.recipe.flour}<br>Sugar: ${this.recipe.sugar}<br>Egg: ${this.recipe.egg}`;
+    document.getElementById("recipeText").innerHTML = text;
   }
 }
 

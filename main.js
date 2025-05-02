@@ -490,7 +490,7 @@ function generateQRCode(recipe) {
 
 function createURL(recipe){
   const baseURL = "https://wa.me/";
-  const phoneNumber = "41764353610";
+  const phoneNumber = "XXXX";
   const message = createMessage(recipe)
   const encodedMessage = encodeURIComponent(message);
   return `${baseURL}${phoneNumber}?text=${encodedMessage}`;

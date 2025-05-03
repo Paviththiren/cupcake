@@ -31,7 +31,7 @@ import wormsImage from './assets/ingredients/worms.png';
 
 import throwLinesImage from './assets/throw_lines.png';
 
-import QRCode from 'qrcode';
+//import QRCode from 'qrcode';
 
 const sizes = {
   width: 1152,

@@ -35,6 +35,9 @@ footer {
 main {
   flex: 1;
   display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 400px; /* <-- increase this value to increase spacing */
 }
 
 #gameCanvas {
@@ -50,7 +53,7 @@ main {
 #recipeScroll {
   position: absolute;
   top: 200px;
-  right: 200px;
+  right: 100px;
   width: 300px;
   height: auto;
   z-index: 10;

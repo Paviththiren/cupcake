@@ -28,6 +28,8 @@ import socksImage from './assets/ingredients/socks.png';
 import strawberryImage from './assets/ingredients/strawberry.png';
 import vanillaImage from './assets/ingredients/vanilla.png';
 import wormsImage from './assets/ingredients/worms.png';
+import currypowderImage from './assets/ingredients/suriya_curry_powder_350x350.png';
+import tangerineImage from './assets/ingredients/tangerine.png';
 
 import throwLinesImage from './assets/throw_lines.png';
 
@@ -39,7 +41,7 @@ const sizes = {
 };
 
 const speedDown = 50;
-const playerMovementSpeed = 200;
+const playerMovementSpeed = 250;
 
 const ingredientsList = [
   { key: "Flour", image: flourImage },
@@ -60,7 +62,8 @@ const ingredientsList = [
   { key: "Strawberry", image: strawberryImage },
   { key: "Vanilla", image: vanillaImage },
   { key: "Worms", image: wormsImage },
-
+  { key: "Suriya Curry Powder", image: currypowderImage },
+  { key: "Tangerine", image: tangerineImage },
 ];
 
 class GameScene extends Phaser.Scene {
@@ -68,7 +71,7 @@ class GameScene extends Phaser.Scene {
     super("scene-game");
     this.player;
     this.cursor;
-    this.playerSpeed = playerMovementSpeed + 50;
+    this.playerSpeed = playerMovementSpeed;
     this.fallingIngredients;
     this.recipe = {};
     this.recipeText;
@@ -115,14 +118,14 @@ class GameScene extends Phaser.Scene {
     this.anims.create({
       key: 'left',
       frames: this.anims.generateFrameNumbers('player', { start: 5, end: 6 }),
-      frameRate: 4,
+      frameRate: 3,
       repeat: -1
     });
     
     this.anims.create({
       key: 'right',
       frames: this.anims.generateFrameNumbers('player', { start: 1, end: 2}),
-      frameRate: 4,
+      frameRate: 3,
       repeat: -1
     });
     
@@ -143,7 +146,7 @@ class GameScene extends Phaser.Scene {
     
     
     //GAME TIME
-    this.totalGameTime = 45;
+    this.totalGameTime = 10;
     this.timeLeft = this.totalGameTime;
 
     // Input Defintions
@@ -189,7 +192,7 @@ class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.fallingIngredients, this.catchIngredient, null, this);
 
     // Create text to show recipe status
-    this.recipeText = this.add.text(sizes.width - 300, 20, "", { fontSize: "24px", fill: "#000" });
+    //this.recipeText = this.add.text(sizes.width - 300, 20, "", { fontSize: "24px", fill: "#000" });
     this.updateRecipeText();
   }
 
@@ -202,29 +205,13 @@ class GameScene extends Phaser.Scene {
       for (let i = 0; i < introCount; i++) {
         this.time.delayedCall(i * 500, () => this.throwIngredientFromStorage());
       }
-
-      const goText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Go!', {
-        fontSize: '48px',
-        color: '#ff0',
-        fontStyle: 'bold'
-      }).setOrigin(0.5);
-
-      this.tweens.add({
-        targets: goText,
-        alpha: 0,
-        duration: 1000,
-        onComplete: () => {
-          goText.destroy();
-          this.input.keyboard.enabled = true;
-          this.controlsEnabled = true;
-
-          this.spawner = this.time.addEvent({
-            delay: 1000,
-            callback: this.throwIngredientFromStorage,
-            callbackScope: this,
-            loop: true
-          });
-        }
+      this.input.keyboard.enabled = true;
+      this.controlsEnabled = true;
+      this.spawner = this.time.addEvent({
+        delay: 1000,
+        callback: this.throwIngredientFromStorage,
+        callbackScope: this,
+        loop: true
       });
     }
 
@@ -235,12 +222,12 @@ class GameScene extends Phaser.Scene {
     const { left, right } = this.cursor;
 
     // Check if we're past halftime and haven't started ramping speeds
-    if (!this.hasStartedSpinup && this.timeLeft < this.totalGameTime / 2) {
-      this.hasStartedSpinup = true;
+    if (this.timeLeft < this.totalGameTime + 5000  ) {
     
-      const maxRotSpeed = 0.005;
-      const maxWobbleSpeed = 0.005;
-      const step = 0.0001;
+      const maxRotSpeed = 0.03;
+      const maxWobbleSpeed = 0.03;
+      const rot_step = 0.00005;
+      const wobble_step = 0.0005;
     
       this.time.addEvent({
         delay: 1000,
@@ -250,8 +237,8 @@ class GameScene extends Phaser.Scene {
             const currentRot = ingredient.getData('rotationSpeed');
             const currentWobble = ingredient.getData('wobbleSpeed');
     
-            const newRot = Math.min(currentRot + step, maxRotSpeed);
-            const newWobble = Math.min(currentWobble + step, maxWobbleSpeed);
+            const newRot = Math.min(currentRot + rot_step, maxRotSpeed);
+            const newWobble = Math.min(currentWobble + wobble_step, maxWobbleSpeed);
     
             ingredient.setData('rotationSpeed', newRot);
             ingredient.setData('wobbleSpeed', newWobble);
@@ -262,7 +249,7 @@ class GameScene extends Phaser.Scene {
     
     
 
-    if (!this.game_over) {
+    if (!this.game_finished) {
       if (this.cursor.left.isDown) {
         this.player.setVelocityX(-this.playerSpeed);
         this.player.anims.play('left', true);
@@ -284,7 +271,7 @@ class GameScene extends Phaser.Scene {
       this.fallingIngredients.getChildren().forEach((ingredient) => {
         // Wobble left-right
         const wobbleSpeed = ingredient.getData('wobbleSpeed');
-        ingredient.x += Math.sin(this.time.now * wobbleSpeed) * 0.5;
+        ingredient.x += Math.sin(this.time.now/10 * wobbleSpeed) *2;
 
         // Rotate slowly
         const rotationSpeed = ingredient.getData('rotationSpeed');
@@ -292,21 +279,24 @@ class GameScene extends Phaser.Scene {
 
       if (ingredient.y > 650){
         ingredient.destroy();
-        if (this.fallingIngredients.getChildren().length == 0)
-            this.game_finished = true;
+        
         
           
       }
-      
+
       });
+
+    
     if (this.game_finished){
       this.endGame();
       this.scene.start('scene-gameover');
     }
     if (this.game_over){
-        this.player.setVelocityX(0);
-        this.player.anims.play('idle', true);
+        //this.player.setVelocityX(0);
+        //this.player.anims.play('idle', true);
         this.spawner.remove();
+        if (this.fallingIngredients.getChildren().length == 0)
+          this.game_finished = true;
       }
 
     this.timeLeft -= this.game.loop.delta / 1000;
@@ -364,13 +354,14 @@ class GameScene extends Phaser.Scene {
   }
   
   catchIngredient(player, ingredient) {
-    if (this.game_over || this.game_finished) return;
+    if (this.game_finished) return;
     const type = ingredient.getData("type");
   
-    const goodIngredients = ["Flour", "Sugar", "Egg", "Butter", "Milk", "Strawberry", "Blueberry", "Caramel", "Honey", "Chocolate", "Nuts", "Vanilla", "Philadelphia"];
+    const goodIngredients = ["Tangerines","Suriya Curry Powder","Flour", "Sugar", "Egg", "Butter", "Milk", "Strawberry", "Blueberry", "Caramel", "Honey", "Chocolate", "Nuts", "Vanilla", "Philadelphia"];
     const isGood = goodIngredients.includes(type);
   
     // Emotion frame based on last movement direction
+    
     const emotionFrame = isGood
       ? (this.lastDirection === "left" ? 8 : 3)
       : (this.lastDirection === "left" ? 9 : 4);
@@ -379,7 +370,7 @@ class GameScene extends Phaser.Scene {
     this.player.setVelocityX(0);
     this.player.anims.stop();
     this.player.setFrame(emotionFrame);
-  
+    
     // Restore movement after short lock
     this.time.delayedCall(250, () => {
       this.controlsEnabled = true;

@@ -27,3 +27,5 @@ dist-ssr
 
 package.json
 package-lock.json
+# Local Netlify folder
+.netlify

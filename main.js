@@ -592,7 +592,7 @@ class GameScene extends Phaser.Scene {
     this.recipeForChatGPT = formattedRecipe;
     this.recipeMessage = `Here is the current recipe:\n\n` + recipeLines.map(line => `- ${line}`).join("\n");
     //console.log(this.recipeMessage);
-    console.log(this.recipeForChatGPT);
+    //console.log(this.recipeForChatGPT);
   }
   
   
@@ -640,30 +640,21 @@ function createMessage(recipe){
 }
   
 async function getChatGPTFeedback(recipeText) {
-  const apiKey = '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'; // Replace with your actual key
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model: 'gpt-4', // or 'gpt-3.5-turbo'
-      messages: [
-        { role: 'system', content: 'You are a playful food critic. Evaluate recipes in a fun and creative way. Keep the feedback short, no more than 3 sentences. Especially, point out quriky ingredients.' },
-        { role: 'user', content: `Please review this cupcake recipe:\n${recipeText}` }
-      ],
-      temperature: 0.7
-    })
-  });
+  try {
+    const response = await fetch('/.netlify/functions/chatgpt', {
+      method: 'POST',
+      body: JSON.stringify({ recipeText })
+    });
 
-  if (!response.ok) {
-    console.error('ChatGPT API Error:', await response.text());
-    return "Error fetching feedback.";
+    const data = await response.json();
+    if (response.ok) {
+      return data.message;
+    } else {
+      console.error("Function error:", data.detail);
+      return "Error fetching feedback.";
+    }
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    return "Error connecting to feedback server.";
   }
-
-  const data = await response.json();
-  return data.choices[0].message.content;
 }
-
-

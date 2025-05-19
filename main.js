@@ -33,6 +33,14 @@ import tangerineImage from './assets/ingredients/tangerine.png';
 
 import throwLinesImage from './assets/throw_lines.png';
 
+
+import introBubbleImage from './assets/intro/Intro_Bubble.png';
+import arrowInstructionsImage from './assets/intro/Arrow_Instructions.png';
+import watchClockImage from './assets/intro/Time_Reminder.png';
+import clockArrowImage from './assets/intro/Clock_Arrow_resized.png';
+import pressSpaceImage from './assets/intro/Press_Space.png';
+import endBubbleImage from './assets/intro/End_Bubble.png';
+
 //import QRCode from 'qrcode';
 
 const sizes = {
@@ -63,7 +71,7 @@ const ingredientsList = [
   { key: "Vanilla", image: vanillaImage },
   { key: "Worms", image: wormsImage },
   { key: "Suriya Curry Powder", image: currypowderImage },
-  { key: "Tangerine", image: tangerineImage },
+  { key: "Tangerines", image: tangerineImage },
 ];
 
 class GameScene extends Phaser.Scene {
@@ -78,6 +86,10 @@ class GameScene extends Phaser.Scene {
     this.lastDirection = "right";
     this.game_over = false;
     this.game_finished = false;
+    this.specialIngredient = false;
+    this.specialIngredientTime = Math.floor(Math.random() * 21) + 15;
+    this.game_stop = true;
+
   }
 
   preload() {
@@ -101,6 +113,17 @@ class GameScene extends Phaser.Scene {
     this.load.image("handle", handle);
 
     this.load.image('throwLines', throwLinesImage);
+
+
+    this.load.image('introBubble', introBubbleImage);
+    this.load.image('arrowInstructions', arrowInstructionsImage);
+    this.load.image('watchClock', watchClockImage);
+    this.load.image('clockArrow', clockArrowImage);
+    this.load.image('pressSpace', pressSpaceImage);
+    this.load.image('endBubble', endBubbleImage);
+
+    this.load.image('Catch Time', 'assets/intro/Catch_Time.png');
+
 
   }
 
@@ -146,7 +169,7 @@ class GameScene extends Phaser.Scene {
     
     
     //GAME TIME
-    this.totalGameTime = 10;
+    this.totalGameTime = 40;
     this.timeLeft = this.totalGameTime;
 
     // Input Defintions
@@ -159,32 +182,54 @@ class GameScene extends Phaser.Scene {
     // Step 1: Talking bubble near storage shelf
     this.player.setVelocityX(0);
     this.input.keyboard.enabled = true;           // Keep input globally active
-    this.controlsEnabled = false;          
+    this.controlsEnabled = true;          
     this.introComplete = false;
 
-    const bubbleX = 950;
-    const bubbleY = 300;
-
-    this.talkingBubble = this.add.text(bubbleX, bubbleY,
-      "I found some ingredients\nin the storage room!\nPick the ones you like!", {
-        fontSize: "22px",
-        backgroundColor: "#000",
-        color: "#fff",
-        padding: { x: 10, y: 10 }
-      }).setOrigin(0.5);
+    this.talkingBubble = this.add.image(900, 250, 'introBubble').setOrigin(0.5).setScale(0.45);
 
     // Step 2: Show instructions after a delay
-    this.time.delayedCall(2500, () => {
+    this.time.delayedCall(3000, () => {
       this.talkingBubble.destroy();
-      this.instructionText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY,
-        "← → Move with Arrow Keys\n🕒 Watch the timer\n\nPress SPACE to continue", {
-          fontSize: "24px",
-          color: "#fff",
-          backgroundColor: "#000",
-          padding: { x: 20, y: 20 },
-          align: "center"
-        }).setOrigin(0.5);
+    
+      const centerX = this.cameras.main.centerX;
+      const centerY = this.cameras.main.centerY;
+      
+      const intro_images = [
+        this.add.image(centerX -115, centerY - 260, 'watchClock').setScale(0.5),
+        this.add.image(centerX + 180, centerY - 250, 'clockArrow').setScale(0.45).setRotation(Phaser.Math.DegToRad(65)),
+        this.add.image(centerX-300, centerY +120, 'arrowInstructions').setScale(0.45),
+        this.add.image(centerX, centerY , 'pressSpace').setScale(0.5)
+      ];
+      
+      // Set initial alpha to 0 (invisible)
+      intro_images.forEach(img => {
+        img.setAlpha(0);
+        img.setOrigin(0.5);
+      });
+      
+      // Fade them in sequentially
+      intro_images.forEach((img, i) => {
+        img.setAlpha(0);
+        img.setScale(img.scale * 0.8); // Start smaller for bounce
+        img.setOrigin(0.5);
+      
+        // Sync index 0 and 1 (arrow + clock) to appear at same time
+        const delay = (i === 0 || i === 1) ? 0 : (i - 1) * 1500;
+      
+        this.time.delayedCall(delay, () => {
+          this.tweens.add({
+            targets: img,
+            alpha: 1,
+            scale: img.scale / 0.8,
+            ease: 'Bounce.easeOut',
+            duration: 600
+          });
+        });
+      });
 
+      this.instructionGroup = this.add.group(intro_images);
+      
+    
       this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     });
 
@@ -194,12 +239,27 @@ class GameScene extends Phaser.Scene {
     // Create text to show recipe status
     //this.recipeText = this.add.text(sizes.width - 300, 20, "", { fontSize: "24px", fill: "#000" });
     this.updateRecipeText();
+    this.game_stop = true;
+
+    document.getElementById("restartButton").addEventListener("click", () => {
+      document.getElementById("gameOverPopup").style.display = "none";
+      this.recipe = {};
+      this.updateRecipeText();
+      this.scene.restart("scene-game");
+
+    });
+    
   }
 
   update() {
     if (!this.introComplete && this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
       this.introComplete = true;
-      this.instructionText.destroy();
+      this.instructionGroup.clear(true, true);
+
+      this.startBubble = this.add.image(900, 220, 'Catch Time').setOrigin(0.5).setScale(0.45);
+      this.time.delayedCall(2000, () => {
+        this.startBubble.destroy();
+      });
 
       const introCount = 2;
       for (let i = 0; i < introCount; i++) {
@@ -215,14 +275,14 @@ class GameScene extends Phaser.Scene {
       });
     }
 
-    if (!this.introComplete) return;  // skip game logic if intro isn't done
+    //if (!this.introComplete) return;  // skip game logic if intro isn't done
 
-    if (!this.controlsEnabled) return;  // skip movement if locked
+    //if (!this.controlsEnabled) return;  // skip movement if locked
 
     const { left, right } = this.cursor;
 
     // Check if we're past halftime and haven't started ramping speeds
-    if (this.timeLeft < this.totalGameTime + 5000  ) {
+    if (this.timeLeft < this.totalGameTime + 8000  ) {
     
       const maxRotSpeed = 0.03;
       const maxWobbleSpeed = 0.03;
@@ -238,7 +298,7 @@ class GameScene extends Phaser.Scene {
             const currentWobble = ingredient.getData('wobbleSpeed');
     
             const newRot = Math.min(currentRot + rot_step, maxRotSpeed);
-            const newWobble = Math.min(currentWobble + wobble_step, maxWobbleSpeed);
+            const newWobble = Math.min(currentWobble + wobble_step*10, maxWobbleSpeed);
     
             ingredient.setData('rotationSpeed', newRot);
             ingredient.setData('wobbleSpeed', newWobble);
@@ -250,70 +310,105 @@ class GameScene extends Phaser.Scene {
     
 
     if (!this.game_finished) {
-      if (this.cursor.left.isDown) {
-        this.player.setVelocityX(-this.playerSpeed);
-        this.player.anims.play('left', true);
-        this.lastDirection = "left";
-      } else if (this.cursor.right.isDown) {
-        this.player.setVelocityX(this.playerSpeed);
-        this.player.anims.play('right', true);
-        this.lastDirection = "right";
-      } else {
-        this.player.setVelocityX(0);
-        const idleFrame = this.lastDirection === "left" ? 7 : 0;
-        this.player.setFrame(idleFrame); // no animation, just a static pose
-      }
-    }
+      if(this.controlsEnabled){
+        if (this.cursor.left.isDown) {
+          this.player.setVelocityX(-this.playerSpeed);
+          this.player.anims.play('left', true);
+          this.lastDirection = "left";
+        } else if (this.cursor.right.isDown) {
+          this.player.setVelocityX(this.playerSpeed);
+          this.player.anims.play('right', true);
+          this.lastDirection = "right";
+        } else {
+          this.player.setVelocityX(0);
+          const idleFrame = this.lastDirection === "left" ? 7 : 0;
+          this.player.setFrame(idleFrame); // no animation, just a static pose
+        }
+    }};
     
 
       
-      // Add juicy movement to falling ingredients
-      this.fallingIngredients.getChildren().forEach((ingredient) => {
+    // Add juicy movement to falling ingredients
+    this.fallingIngredients.getChildren().forEach((ingredient) => {
+
+      if (this.timeLeft > this.totalGameTime / 2){
+        ingredient.x += 0;
+        ingredient.rotation += 0;
+      }
+      else {
+        const amplitude = this.totalGameTime - 2*this.timeLeft;
+        if(this.timeLeft <= this.totalGameTime / 4){
+          const amplitude = this.totalGameTime - 1.5*this.timeLeft;
+        }
         // Wobble left-right
         const wobbleSpeed = ingredient.getData('wobbleSpeed');
-        ingredient.x += Math.sin(this.time.now/10 * wobbleSpeed) *2;
+        ingredient.x += Math.sin(this.time.now/10 * wobbleSpeed) *0.1*amplitude;
 
         // Rotate slowly
         const rotationSpeed = ingredient.getData('rotationSpeed');
         ingredient.rotation += rotationSpeed;
-
-      if (ingredient.y > 650){
-        ingredient.destroy();
-        
-        
-          
       }
 
-      });
+
+    if (ingredient.y > 650){
+      ingredient.destroy();  
+    }
+
+    });
 
     
-    if (this.game_finished){
+    if (this.game_finished && this.game_stop) {
+
+      getChatGPTFeedback(this.recipeMessage).then(feedback => {
+        console.log("ChatGPT Feedback:", feedback);
+        this.chatGPTFeedback = feedback;
+      
+        // Optionally show it in the Game Over UI
+        /*
+        const feedbackEl = document.createElement('div');
+        feedbackEl.innerText = feedback;
+        document.body.appendChild(feedbackEl); */
+      });
+      this.game_stop = false;
+      this.game_over = false;
+      this.game_finished = false;
+      this.introComplete = false;
+      //this.recipe = {};
+      //this.updateRecipeText();
       this.endGame();
-      this.scene.start('scene-gameover');
+      this.endBubble = this.add.image(900, 220, 'endBubble').setOrigin(0.5).setScale(0.45);
+      this.time.delayedCall(2000, () => {
+        this.endBubble.destroy();
+      });
+      this.time.delayedCall(2000, () => {
+
+        document.getElementById("gameOverPopup").style.display = "block";
+      });
     }
     if (this.game_over){
-        //this.player.setVelocityX(0);
-        //this.player.anims.play('idle', true);
         this.spawner.remove();
         if (this.fallingIngredients.getChildren().length == 0)
           this.game_finished = true;
       }
-
-    this.timeLeft -= this.game.loop.delta / 1000;
-    const rotation = 2 * Math.PI * (1 - this.timeLeft / this.totalGameTime);
-    this.hourHand.setRotation(rotation);
-    if (this.timeLeft <= 0) {
-      this.timeLeft = 0;
-      this.game_over = true;
-      //this.endGame(); // Your game over logic her
+    if(this.introComplete){
+      this.timeLeft -= this.game.loop.delta / 1000;
+      const rotation = 2 * Math.PI * (1 - this.timeLeft / this.totalGameTime);
+      this.hourHand.setRotation(rotation);
+      if (this.timeLeft <= 0) {
+        this.timeLeft = 0;
+        this.game_over = true;
     }
+
+
+
+    }
+    
   }
 
   endGame() {
     this.fallingIngredients.clear(true, true);
-    this.player.setVelocityX(0);
-    this.player.anims.play('idle', true);
-    console.log("Game Over! Your recipe is ready!");
+    //this.player.setVelocityX(0);
+    //this.player.anims.play('idle', true);
   }
   throwIngredientFromStorage() {
     const startX = 1030;
@@ -342,10 +437,30 @@ class GameScene extends Phaser.Scene {
   
 
   spawnIngredientAt(x, y) {
-    const randomIngredient = Phaser.Utils.Array.GetRandom(ingredientsList);
+    let randomIngredient = Phaser.Utils.Array.GetRandom(ingredientsList);
+    while (randomIngredient.key === "Suriya Curry Powder" ) {
+      randomIngredient = Phaser.Utils.Array.GetRandom(ingredientsList);
+    }
+    
+    if (this.totalGameTime - this.timeLeft > this.specialIngredientTime && !this.specialIngredient)
+    {
+      this.specialIngredient = true;
+      randomIngredient = Phaser.Utils.Array.GetRandom(ingredientsList.filter(i => i.key === "Suriya Curry Powder"));
+    }
+
     const ingredient = this.fallingIngredients.create(x, y, randomIngredient.key);
     ingredient.setData("type", randomIngredient.key);
-    ingredient.setScale(0.3);
+    if (ingredient.getData("type") == "Vanilla"){
+      ingredient.setScale(0.4);}
+    else if (ingredient.getData("type") == "Tangerines"){
+      ingredient.setScale(0.35);}
+    else if (ingredient.getData("type") == "Suriya Curry Powder"){
+      ingredient.setScale(0.35);}
+    else if (ingredient.getData("type") == "Philadelphia"){
+      ingredient.setScale(0.34);}
+    else{
+      ingredient.setScale(0.3);
+    }
     ingredient.setCollideWorldBounds(true);
     ingredient.setBounce(0.5);
     ingredient.setData('rotationSpeed', 0);
@@ -372,7 +487,7 @@ class GameScene extends Phaser.Scene {
     this.player.setFrame(emotionFrame);
     
     // Restore movement after short lock
-    this.time.delayedCall(250, () => {
+    this.time.delayedCall(300, () => {
       this.controlsEnabled = true;
     });
   
@@ -429,13 +544,23 @@ class GameScene extends Phaser.Scene {
   
   updateRecipeText() {
     const entries = Object.entries(this.recipe);
-    const mid = 9;
+    const mid = 10;
   
     let col1 = "";
     let col2 = "";
-
-    entries.forEach(([ingredient, count], index) => {
+    let secretLine = "";
+  
+    const formattedRecipe = [];
+    let recipeLines = [];
+  
+    const normalEntries = entries.filter(([ingredient]) => ingredient !== "Suriya Curry Powder");
+    const secretEntry = entries.find(([ingredient]) => ingredient === "Suriya Curry Powder");
+  
+    normalEntries.forEach(([ingredient, count], index) => {
       const line = `${count}x ${ingredient}`;
+      formattedRecipe.push({ ingredient, count });
+      recipeLines.push(line);
+  
       if (index < mid) {
         col1 += `${line}<br>`;
       } else {
@@ -443,14 +568,36 @@ class GameScene extends Phaser.Scene {
       }
     });
   
-    document.getElementById("recipeText").innerHTML = `
-      <div class="recipe-col">${col1}</div>
-      <div class="recipe-col">${col2}</div>
-  `;
+    if (secretEntry) {
+      const [ingredient, count] = secretEntry;
+      secretLine = `
+        <div style="width: 100%; text-align: center; margin-top: 8px;">
+          <span style="color: red; font-weight: bold;">Secret: ${ingredient}</span>
+        </div>
+      `;
+      formattedRecipe.push({ ingredient, count, secret: true });
+      recipeLines.push(`Secret Ingredient: ${ingredient}`);
+    }
   
+    // Update UI
+    document.getElementById("recipeText").innerHTML = `
+      <div style="display: flex; gap: 16px; width: 100%;">
+        <div class="recipe-col">${col1}</div>
+        <div class="recipe-col">${col2}</div>
+      </div>
+      ${secretLine}
+    `;
+  
+    // Save in exportable forms
+    this.recipeForChatGPT = formattedRecipe;
+    this.recipeMessage = `Here is the current recipe:\n\n` + recipeLines.map(line => `- ${line}`).join("\n");
+    //console.log(this.recipeMessage);
+    console.log(this.recipeForChatGPT);
   }
-}
-
+  
+  
+  
+}  
 const config = {
   type: Phaser.WEBGL,
   width: sizes.width,
@@ -491,3 +638,32 @@ function createMessage(recipe){
   const message = `Flour: ${recipe.flour}, Sugar: ${recipe.sugar}, Egg: ${recipe.egg}`;
   return message
 }
+  
+async function getChatGPTFeedback(recipeText) {
+  const apiKey = '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'; // Replace with your actual key
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4', // or 'gpt-3.5-turbo'
+      messages: [
+        { role: 'system', content: 'You are a playful food critic. Evaluate recipes in a fun and creative way. Keep the feedback short, no more than 3 sentences. Especially, point out quriky ingredients.' },
+        { role: 'user', content: `Please review this cupcake recipe:\n${recipeText}` }
+      ],
+      temperature: 0.7
+    })
+  });
+
+  if (!response.ok) {
+    console.error('ChatGPT API Error:', await response.text());
+    return "Error fetching feedback.";
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
+

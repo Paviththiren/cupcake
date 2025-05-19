@@ -24,24 +24,26 @@ body {
   min-height: 100vh;
 }
 
+/*
 header,
 footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 20px;
+  padding: 2vw 1vw; 
 }
+*/
 
 main {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 400px; /* <-- increase this value to increase spacing */
+  gap: 20vw; /* was 400px */
 }
 
 #gameCanvas {
-  border: 1px solid red;
+  border: 0.vw solid red;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -51,79 +53,35 @@ main {
 }
 
 #recipeScroll {
-  position: absolute;
-  top: 200px;
-  right: 100px;
-  width: 300px;
-  height: auto;
+  position: relative;
+  left: 40.5vw; /* was 800px */
+  top: 15%;
+  width: 10vw; /* was 300px */
   z-index: 10;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: scale(1);
 }
 
 #scrollImage {
-  width: 140%;
+  width: 22vw; /* was 140% of container */
   height: auto;
   display: block;
 }
 
 #recipeText {
-  position: absolute;
-  top: 220px;
-  left: 75px;
-  width: 290px;
+  width: 130%;
+  margin-top: -21.5vw; /* was -420px */
   color: #4b2d0f;
   font-family: 'IM Fell English SC', 'Papyrus', fantasy;
-  font-size: 20px;
-  line-height: 30px;
-  pointer-events: none;
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-}
+  font-size: 0.95vw; /* was 20px */
+  line-height: 1.2vw; /* was 25px */
+  text-align: left;
 
-.recipe-col {
-  flex: 1;
-}
-/* .gameUI {
-  width: 100%;
-  height: 100%;
-  background-color: var(--accClr);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 2;
+  align-items: left;
+  gap: 0.01vw; /* was 12px */
 }
-
-.gameUI * {
-  text-align: center;
-  margin-top: 5px;
-}
-
-#gameStartDiv {
-  display: flex;
-}
-
-#gameEndDiv {
-  display: none;
-}
-
-#gameStartBtn{
-  display: inline-block;
-  width: 100px;
-  padding:8px 15px;
-  margin: 20px 0;
-  text-align: center;
-  font-family: inherit;
-  border-radius: 10px;;
-}
-
-#gameStartBtn p{
-  margin-top: 0;
-}
-
-#gameStartBtn:hover{
-  background-color: var(--dkClr);
-  border: 0.5px solid var(--liClr);
-  color: var(--liClr);
-  cursor:pointer;
-} */

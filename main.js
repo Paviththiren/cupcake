@@ -41,6 +41,8 @@ import clockArrowImage from './assets/intro/Clock_Arrow_resized.png';
 import pressSpaceImage from './assets/intro/press_ref.png';
 import endBubbleImage from './assets/intro/End_Bubble.png';
 
+import CatchTimeImage from './assets/intro/Catch_Time_2.png';
+
 import QRCode, { create } from 'qrcode';
 
 const sizes = {
@@ -123,8 +125,7 @@ class GameScene extends Phaser.Scene {
     this.load.image('clockArrow', clockArrowImage);
     this.load.image('pressSpace', pressSpaceImage);
     this.load.image('endBubble', endBubbleImage);
-
-    this.load.image('Catch Time', 'assets/intro/Catch_Time.png');
+    this.load.image('Catch Time', CatchTimeImage);
 
 
   }

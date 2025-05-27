@@ -5,6 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/assets/cupcake.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital@1&display=swap" rel="stylesheet">
+
     
     
     <title> Cupcake </title>
@@ -20,12 +22,69 @@
         <div id="recipeText">
         </div>
       </div>
-      <div id="gameOverPopup" style="display: none; position: absolute; top: 200px; left: 50%; transform: translateX(-50%); z-index: 20; text-align: center;">
-        <img src="assets/intro/Press_Space.png" alt="Game Over" style="width: 400px; height: auto; display: block; margin-bottom: 16px;" />
-        <button id="restartButton" style="padding: 10px 20px; font-size: 18px; border-radius: 8px; border: none; background-color: #0d0d35; color: white; cursor: pointer;">
-          Play Again
-        </button>
-      </div>
+<!-- Game Over Popup -->
+<div id="gameOverPopup" style="
+  display: none;
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  text-align: center;
+">
+  <img src="assets/Game_Popup.png"
+       alt="Game Over"
+       style="width: 1024px; height: auto; display: block;" />
+
+  <!-- QR Code container (LEFT side) -->
+  <div id="qrCodeContainer" style="
+    position: absolute;
+    top: 256px;   /* adjust as needed */
+    left: 102px;  /* adjust as needed */
+    width: 300px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 21;
+  "></div>
+
+  <!-- ChatGPT feedback (RIGHT side) -->
+  <div id="gameOverText" style="
+    width: 320px;
+    margin-left: 425px;
+    margin-top: -450px;
+    text-align: left;
+    font-size: 20px;
+    color: #4b2d0f;
+    font-family: 'Comic Neue', cursive;
+    font-style: italic;
+  "></div>
+</div>
+
+<!-- Try Again Button -->
+<div id="gameOverButtonWrapper" style="
+  display: none;
+  position: absolute;
+  top: 500px;
+  left: 908px;
+  transform: translateX(-50%);
+  z-index: 21;
+  text-align: center;
+">
+  <button id="restartButton" style="
+    all: unset;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+  ">
+    <img src="assets/Again_Button_2.png"
+         alt="Play Again"
+         style="width: 200px; height: auto; display: block;" />
+  </button>
+</div>
+
+
       <!-- <div id="gameStartDiv" class="gameUI">
         <h1>Apple Catcher</h1>
         <p>You have 30 seconds to catch apples!</p>

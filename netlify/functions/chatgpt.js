@@ -13,7 +13,7 @@ export async function handler(event) {
       body: JSON.stringify({
         model: 'gpt-4',
         messages: [
-          { role: 'system', content: 'You are a playful food critic. Evaluate recipes in a fun and creative way. Keep the feedback short, no more than 3 sentences. Especially, point out quirky ingredients.' },
+          { role: 'system', content: 'You are a playful food critic. Evaluate recipes in a fun and creative way. You can compliment the recipe, but do not overdo it. Keep the feedback short, no more than 3 sentences. Especially, point out quirky ingredients.' },
           { role: 'user', content: `Please review this cupcake recipe:\n${recipeText}` }
         ],
         temperature: 0.7

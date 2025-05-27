@@ -35,13 +35,13 @@ import throwLinesImage from './assets/throw_lines.png';
 
 
 import introBubbleImage from './assets/intro/Intro_Bubble.png';
-import arrowInstructionsImage from './assets/intro/Arrow_Instructions.png';
-import watchClockImage from './assets/intro/Time_Reminder.png';
+import arrowInstructionsImage from './assets/intro/arrow_ref.png';
+import watchClockImage from './assets/intro/time_ref.png';
 import clockArrowImage from './assets/intro/Clock_Arrow_resized.png';
-import pressSpaceImage from './assets/intro/Press_Space.png';
+import pressSpaceImage from './assets/intro/press_ref.png';
 import endBubbleImage from './assets/intro/End_Bubble.png';
 
-//import QRCode from 'qrcode';
+import QRCode, { create } from 'qrcode';
 
 const sizes = {
   width: 1152,
@@ -89,6 +89,8 @@ class GameScene extends Phaser.Scene {
     this.specialIngredient = false;
     this.specialIngredientTime = Math.floor(Math.random() * 21) + 15;
     this.game_stop = true;
+    this.gpt_output = false;
+    this.endBubbleShown = false;
 
   }
 
@@ -169,7 +171,7 @@ class GameScene extends Phaser.Scene {
     
     
     //GAME TIME
-    this.totalGameTime = 40;
+    this.totalGameTime = 3;
     this.timeLeft = this.totalGameTime;
 
     // Input Defintions
@@ -195,10 +197,10 @@ class GameScene extends Phaser.Scene {
       const centerY = this.cameras.main.centerY;
       
       const intro_images = [
-        this.add.image(centerX -115, centerY - 260, 'watchClock').setScale(0.5),
+        this.add.image(centerX -85, centerY - 260, 'watchClock').setScale(0.5),
         this.add.image(centerX + 180, centerY - 250, 'clockArrow').setScale(0.45).setRotation(Phaser.Math.DegToRad(65)),
-        this.add.image(centerX-300, centerY +120, 'arrowInstructions').setScale(0.45),
-        this.add.image(centerX, centerY , 'pressSpace').setScale(0.5)
+        this.add.image(centerX+180, centerY + 40, 'arrowInstructions').setScale(0.45),
+        this.add.image(centerX-250, centerY+300, 'pressSpace').setScale(0.5)
       ];
       
       // Set initial alpha to 0 (invisible)
@@ -243,10 +245,16 @@ class GameScene extends Phaser.Scene {
 
     document.getElementById("restartButton").addEventListener("click", () => {
       document.getElementById("gameOverPopup").style.display = "none";
+      document.getElementById("gameOverButtonWrapper").style.display = "none";
+      
+      this.game_stop = false;
+      this.game_over = false;
+      this.game_finished = false;
+      this.introComplete = false;
+      this.gpt_output = false;
       this.recipe = {};
       this.updateRecipeText();
       this.scene.restart("scene-game");
-
     });
     
   }
@@ -358,31 +366,28 @@ class GameScene extends Phaser.Scene {
 
     
     if (this.game_finished && this.game_stop) {
-
-      getChatGPTFeedback(this.recipeMessage).then(feedback => {
-        console.log("ChatGPT Feedback:", feedback);
-        this.chatGPTFeedback = feedback;
-      
-        // Optionally show it in the Game Over UI
-        /*
-        const feedbackEl = document.createElement('div');
-        feedbackEl.innerText = feedback;
-        document.body.appendChild(feedbackEl); */
-      });
       this.game_stop = false;
-      this.game_over = false;
-      this.game_finished = false;
-      this.introComplete = false;
-      //this.recipe = {};
-      //this.updateRecipeText();
-      this.endGame();
       this.endBubble = this.add.image(900, 220, 'endBubble').setOrigin(0.5).setScale(0.45);
       this.time.delayedCall(2000, () => {
         this.endBubble.destroy();
+        
       });
-      this.time.delayedCall(2000, () => {
 
+      this.endGame();
+      this.time.delayedCall(3000, () => {
+
+        
+        setTimeout(() => {
+          getChatGPTFeedback(this.recipeMessage).then(feedback => {
+            feedback = "\"" + feedback + "\" \n \− Chibi-Pavi";
+            document.getElementById('gameOverText').innerText = feedback;
+
+          });
+        }, 200);
         document.getElementById("gameOverPopup").style.display = "block";
+        generateQRCode(this.recipe);
+        document.getElementById('gameOverButtonWrapper').style.display = 'block';
+        
       });
     }
     if (this.game_over){
@@ -407,8 +412,8 @@ class GameScene extends Phaser.Scene {
 
   endGame() {
     this.fallingIngredients.clear(true, true);
-    //this.player.setVelocityX(0);
-    //this.player.anims.play('idle', true);
+    this.player.setVelocityX(0);
+    this.player.anims.play('idle', true);
   }
   throwIngredientFromStorage() {
     const startX = 1030;
@@ -506,10 +511,6 @@ class GameScene extends Phaser.Scene {
   
     this.updateRecipeText();
     ingredient.destroy();
-  
-    if (this.recipe.flour >= 2 && this.recipe.sugar >= 2 && this.recipe.egg >= 2) {
-      generateQRCode("Test");
-    }
   }
   
   
@@ -618,24 +619,47 @@ const game = new Phaser.Game(config);
 
 function generateQRCode(recipe) {
   const recipeText = createURL(recipe);
-  const canvas = document.createElement('canvas');
-  document.body.appendChild(canvas);
+  const container = document.getElementById('qrCodeContainer');
 
-  QRCode.toCanvas(canvas, recipeText, { width: 200 }, function (error) {
-    if (error) console.error(error);
+  if (!container) return;
+  container.innerHTML = ''; // Clear any previous QR
+
+  const canvas = document.createElement('canvas');
+  canvas.style.width = '250px';
+  canvas.style.height = '250px';
+  canvas.style.objectFit = 'contain';
+  canvas.style.margin = '0 auto';
+  canvas.style.display = 'block';
+
+  container.appendChild(canvas);
+
+  QRCode.toCanvas(canvas, recipeText, {
+    width: 131,
+    margin: 0,
+    color: {
+      dark: '#4b2d0f',   // Dot color: deep brown
+      light: '#f0deb6'   // Background color: warm beige
+    }
+  }, function (error) {
+    if (error) console.error('QR Code error:', error);
   });
 }
 
+
+
 function createURL(recipe){
   const baseURL = "https://wa.me/";
-  const phoneNumber = "XXXX";
-  const message = createMessage(recipe)
+  const phoneNumber = "41764353610";
+  const message = createMessage(recipe);
   const encodedMessage = encodeURIComponent(message);
   return `${baseURL}${phoneNumber}?text=${encodedMessage}`;
 }
 
 function createMessage(recipe){
-  const message = `Flour: ${recipe.flour}, Sugar: ${recipe.sugar}, Egg: ${recipe.egg}`;
+  let message = "Hi Pavi! I have created a recipe with the following ingredients:\n\n";
+  message += Object.entries(recipe)
+    .map(([ingredient, count]) => `${count}x ${ingredient}`)
+    .join("\n");
   return message
 }
   

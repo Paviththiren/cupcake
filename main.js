@@ -171,7 +171,7 @@ class GameScene extends Phaser.Scene {
     
     
     //GAME TIME
-    this.totalGameTime = 3;
+    this.totalGameTime = 40;
     this.timeLeft = this.totalGameTime;
 
     // Input Defintions

@@ -158,7 +158,7 @@ create() {
   }
 
 // replaced below
-    const { left, right } = this.cursor;
+    const{ left, right } = this.cursor;
 
 
     if (this.cursor.left.isDown) {

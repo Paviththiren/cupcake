@@ -1,6 +1,8 @@
 import "./style.css";
 import Phaser from "phaser";
 
+import StoryScene from './story_scene.js'; 
+
 import bgImage from './assets/bg.png';
 
 import GameOverScene from './GameOverScene.js';
@@ -172,6 +174,9 @@ class GameScene extends Phaser.Scene {
     
     
     //GAME TIME
+    //////////////////////////
+    //////////////////////////
+    //////////////////////////
     this.totalGameTime = 40;
     this.timeLeft = this.totalGameTime;
 
@@ -191,7 +196,7 @@ class GameScene extends Phaser.Scene {
     this.talkingBubble = this.add.image(900, 250, 'introBubble').setOrigin(0.5).setScale(0.45);
 
     // Step 2: Show instructions after a delay
-    this.time.delayedCall(3000, () => {
+    this.time.delayedCall(6000, () => {
       this.talkingBubble.destroy();
     
       const centerX = this.cameras.main.centerX;
@@ -376,13 +381,13 @@ class GameScene extends Phaser.Scene {
 
       this.endGame();
       this.time.delayedCall(3000, () => {
+        const gameOverText = document.getElementById('gameOverText');
+        gameOverText.innerText = "Loading... 🧁"; // ⏳ optional emoji
 
-        
         setTimeout(() => {
           getChatGPTFeedback(this.recipeMessage).then(feedback => {
-            feedback = "\"" + feedback + "\" \n \− Chibi-Pavi";
-            document.getElementById('gameOverText').innerText = feedback;
-
+            feedback = "\"" + feedback + "\"\n− Chibi-Pavi";
+            gameOverText.innerText = feedback;
           });
         }, 200);
         document.getElementById("gameOverPopup").style.display = "block";
@@ -612,7 +617,7 @@ const config = {
       //debug: true,
     },
   },
-  scene: [GameScene,GameOverScene],
+  scene: [StoryScene, GameScene],
 };
 
 const game = new Phaser.Game(config);
@@ -626,8 +631,8 @@ function generateQRCode(recipe) {
   container.innerHTML = ''; // Clear any previous QR
 
   const canvas = document.createElement('canvas');
-  canvas.style.width = '250px';
-  canvas.style.height = '250px';
+  canvas.style.width = '180px';
+  canvas.style.height = '180px';
   canvas.style.objectFit = 'contain';
   canvas.style.margin = '0 auto';
   canvas.style.display = 'block';
@@ -635,7 +640,8 @@ function generateQRCode(recipe) {
   container.appendChild(canvas);
 
   QRCode.toCanvas(canvas, recipeText, {
-    width: 131,
+    errorCorrectionLevel: 'L',
+    width: 180,
     margin: 0,
     color: {
       dark: '#4b2d0f',   // Dot color: deep brown
@@ -656,14 +662,53 @@ function createURL(recipe){
   return `${baseURL}${phoneNumber}?text=${encodedMessage}`;
 }
 
-function createMessage(recipe){
-  let message = "Hi Pavi! I have created a recipe with the following ingredients:\n\n";
-  message += Object.entries(recipe)
-    .map(([ingredient, count]) => `${count}x ${ingredient}`)
-    .join("\n");
-  return message
-}
+function createMessage(recipe) {
   
+  const emojiMap = {
+    Flour: '🌾',
+    Sugar: '🍬',
+    Egg: '🥚',
+    Butter: '🧈',
+    Milk: '🥛',
+    Strawberry: '🍓',
+    Blueberry: '🫐',
+    Caramel: '🍮',
+    Honey: '🍯',
+    Chocolate: '🍫',
+    Nuts: '🥜',
+    Vanilla: '🌼',
+    Philadelphia: '🧀',
+    Tangerines: '🍊',
+    "Suriya Curry Powder": '🌶️',
+    Boots: '👢',
+    Nails: '🔩',
+    Soap: '🧼' ,
+    Socks: '🧦',
+    Worms: '🐛',
+  };
+
+  let message = "Hi Pavi!😊\nHere is a recipe for some lovely cupcakes!😋🧁\n\n*RECIPE*\n";
+  if (Object.keys(recipe).length < 20) {
+    message += Object.entries(recipe)
+      .map(([ingredient, count]) => {
+        const emoji = emojiMap[ingredient] || ''; // default emoji
+        return `${count}x ${ingredient} ${emoji}`;
+      })
+      .join("\n");}
+  else {
+    message += Object.entries(recipe)
+      .map(([ingredient, count]) => {
+        const emoji = emojiMap[ingredient] || '🧂'; // default emoji
+        return `${count}x ${ingredient}`;
+      })
+      .join("\n");
+  }
+
+  message += "\n\nNow that you have a recipe... When do I get MY cupcakes???"
+
+  return message;
+}
+
 async function getChatGPTFeedback(recipeText) {
   try {
     const response = await fetch('/.netlify/functions/chatgpt', {

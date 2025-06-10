@@ -133,7 +133,7 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-
+    document.getElementById('recipeScroll').style.display = 'flex';
     this.add.image(0, 0, "bg").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height);
 
     //Initialize player model
@@ -382,7 +382,7 @@ class GameScene extends Phaser.Scene {
       this.endGame();
       this.time.delayedCall(3000, () => {
         const gameOverText = document.getElementById('gameOverText');
-        gameOverText.innerText = "Loading... 🧁"; // ⏳ optional emoji
+        gameOverText.innerText = "Loading..."; // ⏳ optional emoji
 
         setTimeout(() => {
           getChatGPTFeedback(this.recipeMessage).then(feedback => {
@@ -687,7 +687,7 @@ function createMessage(recipe) {
     Worms: '🐛',
   };
 
-  let message = "Hi Pavi!😊\nHere is a recipe for some lovely cupcakes!😋🧁\n\n*RECIPE*\n";
+  let message = "Hi Pavi! 😊\nHere is a recipe for some lovely cupcakes!😋🧁\n\n*RECIPE*\n";
   if (Object.keys(recipe).length < 20) {
     message += Object.entries(recipe)
       .map(([ingredient, count]) => {

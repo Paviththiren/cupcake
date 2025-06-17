@@ -160,7 +160,7 @@ export default class StoryScene extends Phaser.Scene {
     this.rotationProgress = 0;
     this.explosionplayed = false;
 
-    this.liftoffmultiplier = 1.01; // Speed multiplier for liftoff
+    this.liftoffmultiplier = 1.004; // Speed multiplier for liftoff
 
 
 
@@ -207,7 +207,7 @@ export default class StoryScene extends Phaser.Scene {
     if (this.phase === 'liftoff') {
       
       this.liftoffSpeed *= this.liftoffmultiplier;
-      this.liftoffmultiplier += 0.000015;
+      this.liftoffmultiplier += 0.0002;
       this.liftoff_counter += 1;
       if (this.liftoff_counter > 50) {
         this.rocket.rotation += 0.1 * dt;

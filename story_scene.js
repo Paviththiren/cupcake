@@ -20,6 +20,7 @@ import announceAudio from './assets/sounds/announce.mp3';
 import explosionAudio from './assets/sounds/explosion.mp3';
 import rocketAudio from './assets/sounds/rocket.mp3';
 import clickAudio from './assets/sounds/click.mp3';
+import countdownAudio from './assets/sounds/countdown3.mp3';
 
 export default class StoryScene extends Phaser.Scene {
   constructor() {
@@ -36,7 +37,7 @@ export default class StoryScene extends Phaser.Scene {
     this.load.image("warning", warningImage);
     this.load.image("recipebook", recipebookImage);
     this.load.spritesheet('explosion', explosionImage, {
-  frameWidth: 222,  // Adjust according to your sheet
+  frameWidth: 220,  // Adjust according to your sheet
   frameHeight: 225  // Adjust accordingly
 });
     this.load.image("ashes", ashesImage);
@@ -46,6 +47,7 @@ export default class StoryScene extends Phaser.Scene {
     this.load.audio("explosion", explosionAudio);
     this.load.audio("rocket", rocketAudio);
     this.load.audio("click", clickAudio);
+    this.load.audio("countdown", countdownAudio);
 
     this.load.image("pavibutton", pavibuttonImage);
     this.load.image("pavisad", pavisadImage);
@@ -139,6 +141,7 @@ export default class StoryScene extends Phaser.Scene {
     this.alarmSound = this.sound.add('alarm');
     this.announceSound = this.sound.add('announce');
     this.clickSound = this.sound.add('click');
+    this.countdownSound = this.sound.add('countdown');
 
     // === States ===
     this.phase = 'static'; // 'idle' → 'liftoff' → 'wait' → 'descent' → 'done'
@@ -159,6 +162,7 @@ export default class StoryScene extends Phaser.Scene {
     this.gravity = 500; 
     this.rotationProgress = 0;
     this.explosionplayed = false;
+    this.launch_pressed = false;
 
     this.liftoffmultiplier = 1.004; // Speed multiplier for liftoff
 
@@ -175,45 +179,64 @@ export default class StoryScene extends Phaser.Scene {
       this.rocket.setRotation(0);
       this.rocket.setPosition(275, 580);
       this.rocket.setVisible(true);
+      
     
       // Start liftoff on space key press
-      if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-
-        this.pavibutton.setVisible(false);
-        this.pavibuttonpressed = this.add.image(395, 430, "pavibuttonpressed").setOrigin(0).setDisplaySize(1152, 768).setScale(0.6);
-        this.clickImage = this.add.image(340,520, "click").setOrigin(0).setScale(0.1);
-        this.clickSound.play({ loop: false, volume: 0.2 });
-        this.time.delayedCall(200, () => {
-          this.pavibuttonpressed.destroy();
-          this.pavibutton.setVisible(true);});
-        this.time.delayedCall(1000, () => {
-          this.clickImage.destroy();
-          this.phase = 'liftoff';
-          this.rocket.play('fly');
-          this.rocketAscentSound.play({ loop: true,volume: 0.2 });
-          this.tweens.add({
-            targets: this.rocketAscentSound,
-            volume: 0.05,
-            duration: 3000, // 1 second fade-out
-          });
+      if (Phaser.Input.Keyboard.JustDown(this.spaceKey) && !this.launch_pressed) {
+        this.launch_pressed = true;
+        this.countdownSound.play({ loop: false, volume: 0.2, rate: 1.0});
+        
+        this.vibrationTween = this.tweens.addCounter({
+          from: -2,
+          to: 2,
+          duration: 50,
+          yoyo: true,
+          repeat: -1,
+          onUpdate: (tween) => {
+            const offset = tween.getValue();
+            this.rocket.x = this.rocket.x + offset;
+          }
         });
         
+        this.time.delayedCall(3500, () => {
 
+
+          this.pavibutton.setVisible(false);
+          
+          this.pavibuttonpressed = this.add.image(395, 430, "pavibuttonpressed").setOrigin(0).setDisplaySize(1152, 768).setScale(0.6);
+          this.clickImage = this.add.image(340,520, "click").setOrigin(0).setScale(0.1);
+          this.clickSound.play({ loop: false, volume: 0.2 });
+          this.time.delayedCall(200, () => {
+            this.pavibuttonpressed.destroy();
+            this.pavibutton.setVisible(true);});
+          this.time.delayedCall(1000, () => {
+            this.clickImage.destroy();
+            this.phase = 'liftoff';
+            this.rocket.play('fly');
+            this.rocketAscentSound.play({ loop: true,volume: 0.2 });
+            this.tweens.add({
+              targets: this.rocketAscentSound,
+              volume: 0.05,
+              duration: 3000, // 1 second fade-out
+            });
+          });
+          
+        });
         
       }
   }
 
     // === PHASE: liftoff ===
     if (this.phase === 'liftoff') {
-      
       this.liftoffSpeed *= this.liftoffmultiplier;
       this.liftoffmultiplier += 0.0002;
       this.liftoff_counter += 1;
-      if (this.liftoff_counter > 50) {
-        this.rocket.rotation += 0.1 * dt;
-        this.rocket.x += 0.1;
-        if(this.liftoff_counter > 100) {
-          this.rocket.x += 0.25;
+      if (this.liftoff_counter > 30) {
+        this.rocket.rotation += 0.07* dt;
+        this.rocket.x += 0.5*dt;
+        if(this.liftoff_counter > 80) {
+          this.rocket.x += 10*dt;
+          this.rocket.rotation += 0.0* dt;
         
         
         }}
@@ -226,11 +249,12 @@ export default class StoryScene extends Phaser.Scene {
           this.showWarningSignal();
           this.alarmSound.play({ loop: false,volume: 0.1 });
           this.announceSound.play({ loop: false,volume: 0.15 });
-          this.pavibutton.destroy();
-          this.pavisad = this.add.image(395, 430, "pavisad").setOrigin(0).setDisplaySize(1152, 768).setScale(0.6);
+          this.children.bringToTop(this.pavibutton);
           this.children.bringToTop(this.recipebook);
-          this.pavi
-      });
+          this.time.delayedCall(1000, () => {
+            this.pavibutton.destroy();
+            this.pavisad = this.add.image(395, 430, "pavisad").setOrigin(0).setDisplaySize(1152, 768).setScale(0.6);});
+        });
         
         this.rocket.play('fly');
         
@@ -256,8 +280,8 @@ export default class StoryScene extends Phaser.Scene {
 
       if (Phaser.Geom.Intersects.RectangleToRectangle(rocketBounds, bookBounds)) {
         this.explosionplayed = true;
-        this.explosionSound.play({ loop: false,volume: 0.2,rate: 3 });
-        this.time.delayedCall(50, () => {
+        this.explosionSound.play({ loop: false,volume: 0.2,rate: 2.5 });
+        this.time.delayedCall(180, () => {
           this.showExplosion(820, 430);
           this.rocket.setVisible(false);
           this.recipebook.setVisible(false);
@@ -273,11 +297,12 @@ export default class StoryScene extends Phaser.Scene {
         
         }
         );
-        this.time.delayedCall(650, () => {
+        this.time.delayedCall(850, () => {
           this.add.image(813, 512, "ashes").setOrigin(0.5).setScale(0.35);
+          this.time.delayedCall(200, () => {
           this.pavisad.destroy();
           this.pavisad2 = this.add.image(395, 430, "pavisad2").setOrigin(0).setDisplaySize(1152, 768).setScale(0.6);
-          
+          });
         }
         );
         }
@@ -291,7 +316,7 @@ export default class StoryScene extends Phaser.Scene {
       this.rocket.setPosition(x, y);
 
       // Clockwise 180° rotation over ~3.5s
-      this.rotationProgress += 0.075;
+      this.rotationProgress += 4.5*dt;
       this.rocket.setRotation(this.rotationProgress * Math.PI);
     }
 

@@ -174,9 +174,6 @@ class GameScene extends Phaser.Scene {
     
     
     //GAME TIME
-    //////////////////////////
-    //////////////////////////
-    //////////////////////////
     this.totalGameTime = 40;
     this.timeLeft = this.totalGameTime;
 
@@ -261,11 +258,14 @@ class GameScene extends Phaser.Scene {
       this.recipe = {};
       this.updateRecipeText();
       this.scene.restart("scene-game");
+      this.gme_time = 0;
+
     });
     
   }
 
   update() {
+    
     if (!this.introComplete && this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
       this.introComplete = true;
       this.instructionGroup.clear(true, true);
@@ -297,7 +297,7 @@ class GameScene extends Phaser.Scene {
 
     // Check if we're past halftime and haven't started ramping speeds
     if (this.timeLeft < this.totalGameTime + 8000  ) {
-    
+      
       const maxRotSpeed = 0.03;
       const maxWobbleSpeed = 0.03;
       const rot_step = 0.00005;
@@ -356,7 +356,7 @@ class GameScene extends Phaser.Scene {
         }
         // Wobble left-right
         const wobbleSpeed = ingredient.getData('wobbleSpeed');
-        ingredient.x += Math.sin(this.time.now/10 * wobbleSpeed) *0.1*amplitude;
+        ingredient.x += (Math.sin(this.time.now/10 * wobbleSpeed)*amplitude) * this.game.loop.delta / 150 ;
 
         // Rotate slowly
         const rotationSpeed = ingredient.getData('rotationSpeed');
@@ -387,8 +387,8 @@ class GameScene extends Phaser.Scene {
         setTimeout(() => {
           getChatGPTFeedback(this.recipeMessage).then(feedback => {
             feedback = "\"" + feedback + "\"\n− Chibi-Pavi";
-            gameOverText.innerText = feedback;
-          });
+            gameOverText.innerText = feedback; 
+          });  
         }, 200);
         document.getElementById("gameOverPopup").style.display = "block";
         generateQRCode(this.recipe);
@@ -617,7 +617,7 @@ const config = {
       //debug: true,
     },
   },
-  scene: [StoryScene, GameScene],
+  scene: [GameScene],
 };
 
 const game = new Phaser.Game(config);

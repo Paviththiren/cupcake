@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import bgImage from './assets/story_scene/story_bg.png';
 import bgImage2 from './assets/story_scene/story_bg_2.png';
-import rocketSheet from './assets/Euler_Asset_2.png';
+import rocketSheet from './assets/Euler_Asset_3.png';
 import warningImage from './assets/story_scene/warn_final.png';
 import recipebookImage from './assets/story_scene/recipe_6.png';
 import explosionImage from './assets/story_scene/expo.png';
@@ -30,8 +30,8 @@ export default class StoryScene extends Phaser.Scene {
   preload() {
     this.load.image("storyBg", bgImage);
     this.load.spritesheet('rocket', rocketSheet, {
-      frameWidth: 1024,
-      frameHeight: 1536
+      frameWidth: 200,
+      frameHeight: 300
     });
     this.load.image("storyBg2", bgImage2);
     this.load.image("warning", warningImage);
@@ -115,7 +115,7 @@ export default class StoryScene extends Phaser.Scene {
     this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     // === Rocket setup ===
-    this.rocket = this.physics.add.sprite(300, 600, 'rocket').setScale(0.22 );
+    this.rocket = this.physics.add.sprite(300, 600, 'rocket').setScale(1 );
     this.rocket.setOrigin(0.5, 1); // Stand on launchpad
     this.rocket.setGravityY(0);
     this.rocket.setVelocityY(0);

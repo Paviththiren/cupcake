@@ -191,7 +191,7 @@ export default class StoryScene extends Phaser.Scene {
           to: 1,
           duration: 50,
           yoyo: true,
-          repeat: 5000,
+          repeat: 90,
           onUpdate: (tween) => {
             const offset = tween.getValue();
             this.rocket.x = this.rocket.x + offset;
@@ -228,8 +228,8 @@ export default class StoryScene extends Phaser.Scene {
 
     // === PHASE: liftoff ===
     if (this.phase === 'liftoff') {
-      this.liftoffSpeed *= this.liftoffmultiplier;
-      this.liftoffmultiplier += 0.015*dt;
+      this.liftoffSpeed += this.liftoffmultiplier;
+      this.liftoffmultiplier -= 7*dt;
       this.liftoff_counter += 1;
       if (this.liftoff_counter > 30) {
         this.rocket.rotation += 0.07* dt;

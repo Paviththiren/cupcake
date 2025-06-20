@@ -184,21 +184,21 @@ export default class StoryScene extends Phaser.Scene {
       // Start liftoff on space key press
       if (Phaser.Input.Keyboard.JustDown(this.spaceKey) && !this.launch_pressed) {
         this.launch_pressed = true;
-        this.countdownSound.play({ loop: false, volume: 0.2, rate: 1.0});
-        
+        this.countdownSound.play({ loop: false, volume: 0.2, rate: 1.0 });
+        this.rocket.play('idle');
         this.vibrationTween = this.tweens.addCounter({
-          from: -2,
-          to: 2,
+          from: -1,
+          to: 1,
           duration: 50,
           yoyo: true,
-          repeat: -1,
+          repeat: 5000,
           onUpdate: (tween) => {
             const offset = tween.getValue();
             this.rocket.x = this.rocket.x + offset;
           }
         });
         
-        this.time.delayedCall(3500, () => {
+        this.time.delayedCall(3700, () => {
 
 
           this.pavibutton.setVisible(false);
@@ -209,7 +209,7 @@ export default class StoryScene extends Phaser.Scene {
           this.time.delayedCall(200, () => {
             this.pavibuttonpressed.destroy();
             this.pavibutton.setVisible(true);});
-          this.time.delayedCall(1000, () => {
+          this.time.delayedCall(700, () => {
             this.clickImage.destroy();
             this.phase = 'liftoff';
             this.rocket.play('fly');
@@ -229,7 +229,7 @@ export default class StoryScene extends Phaser.Scene {
     // === PHASE: liftoff ===
     if (this.phase === 'liftoff') {
       this.liftoffSpeed *= this.liftoffmultiplier;
-      this.liftoffmultiplier += 0.02*dt;
+      this.liftoffmultiplier += 0.015*dt;
       this.liftoff_counter += 1;
       if (this.liftoff_counter > 30) {
         this.rocket.rotation += 0.07* dt;

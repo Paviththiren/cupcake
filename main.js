@@ -360,7 +360,7 @@ class GameScene extends Phaser.Scene {
 
         // Rotate slowly
         const rotationSpeed = ingredient.getData('rotationSpeed');
-        ingredient.rotation += rotationSpeed;
+        ingredient.rotation += rotationSpeed* this.game.loop.delta /20;
       }
 
 
@@ -617,7 +617,7 @@ const config = {
       //debug: true,
     },
   },
-  scene: [GameScene],
+  scene: [StoryScene,GameScene],
 };
 
 const game = new Phaser.Game(config);

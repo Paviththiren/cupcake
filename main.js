@@ -579,7 +579,7 @@ class GameScene extends Phaser.Scene {
       const [ingredient, count] = secretEntry;
       secretLine = `
         <div style="width: 100%; text-align: center; margin-top: 8px;">
-          <span style="color: red; font-weight: bold;">Secret: ${ingredient}</span>
+          <span style="color: red;">Secret: ${ingredient}</span>
         </div>
       `;
       formattedRecipe.push({ ingredient, count, secret: true });

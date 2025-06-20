@@ -229,7 +229,7 @@ export default class StoryScene extends Phaser.Scene {
     // === PHASE: liftoff ===
     if (this.phase === 'liftoff') {
       this.liftoffSpeed *= this.liftoffmultiplier;
-      this.liftoffmultiplier += 0.0002;
+      this.liftoffmultiplier += 0.02*dt;
       this.liftoff_counter += 1;
       if (this.liftoff_counter > 30) {
         this.rocket.rotation += 0.07* dt;

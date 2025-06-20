@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import bgImage from './assets/story_scene/story_bg.png';
 import bgImage2 from './assets/story_scene/story_bg_2.png';
-import rocketSheet from './assets/Euler_Asset_1.png';
+import rocketSheet from './assets/Euler_Asset_2.png';
 import warningImage from './assets/story_scene/warn_final.png';
 import recipebookImage from './assets/story_scene/recipe_6.png';
 import explosionImage from './assets/story_scene/expo.png';
@@ -185,7 +185,7 @@ export default class StoryScene extends Phaser.Scene {
       if (Phaser.Input.Keyboard.JustDown(this.spaceKey) && !this.launch_pressed) {
         this.launch_pressed = true;
         this.countdownSound.play({ loop: false, volume: 0.2, rate: 1.0 });
-        this.rocket.play('idle');
+        this.rocket.play('static');
         this.vibrationTween = this.tweens.addCounter({
           from: -1,
           to: 1,

@@ -5,7 +5,7 @@ import StoryScene from './story_scene.js';
 
 import bgImage from './assets/bg.png';
 
-import GameOverScene from './GameOverScene.js';
+import TitleScene from './title_scene.js';
 
 import playerSpriteSheet from './assets/test_7.png';
 
@@ -382,7 +382,7 @@ class GameScene extends Phaser.Scene {
       this.endGame();
       this.time.delayedCall(3000, () => {
         const gameOverText = document.getElementById('gameOverText');
-        gameOverText.innerText = "Loading..."; // ⏳ optional emoji
+        gameOverText.innerText = "Thinking..."; // ⏳ optional emoji
 
         setTimeout(() => {
           getChatGPTFeedback(this.recipeMessage).then(feedback => {
@@ -617,7 +617,7 @@ const config = {
       //debug: true,
     },
   },
-  scene: [StoryScene,GameScene],
+  scene: [TitleScene,StoryScene,GameScene],
 };
 
 const game = new Phaser.Game(config);

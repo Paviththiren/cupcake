@@ -17,22 +17,16 @@ body {
 }
 
 body {
-  background-color: var(--dkClr);
+  background-image: url('./assets/cupcake_background3.png');
+  background-repeat: repeat;
+  background-size: 700px; /* Adjust for pattern scale */
+  background-color: #f9f6f2; /* fallback base */
   color: var(--liClr);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/*
-header,
-footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2vw 1vw; 
-}
-*/
 
 main {
   flex: 1;
@@ -44,6 +38,7 @@ main {
 
 #gameCanvas {
   border: 0.vw solid red;
+  border-radius: 0px; 
   position: absolute;
   top: 50%;
   left: 50%;
@@ -86,3 +81,13 @@ main {
   gap: 0.01vw; /* was 12px */
 }
 
+#canvasFrame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1432px;
+  height: 1036px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 2; /* Ensure it's above the gameCanvas */
+}

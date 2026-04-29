@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import bgImage from './assets/title_screen3.png'; // Adjust the path as necessary
-import startButtonImage from './assets/start_button2.png'; // Adjust the path as necessary
-import clickSound from './assets/sounds/click2.mp3'; // Adjust the path as necessary
+import bgImage from './assets/title-screen-background.png';
+import startButtonImage from './assets/start-button.png';
+import clickSound from './assets/sounds/title-click.mp3';
 
 
 export default class TitleScene extends Phaser.Scene {

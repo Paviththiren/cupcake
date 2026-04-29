@@ -1,26 +1,26 @@
 import Phaser from "phaser";
-import bgImage from './assets/story_scene/story_bg.png';
-import bgImage2 from './assets/story_scene/story_bg_2.png';
-import rocketSheet from './assets/Euler_Asset_5.png';
-import warningImage from './assets/story_scene/warn_final.png';
-import recipebookImage from './assets/story_scene/recipe_6.png';
-import explosionImage from './assets/story_scene/expo.png';
-import ashesImage from './assets/story_scene/ashes_2.png';
+import bgImage from './assets/story_scene/launch-background.png';
+import bgImage2 from './assets/story_scene/warning-background.png';
+import rocketSheet from './assets/rocket-sprite-sheet.png';
+import warningImage from './assets/story_scene/warning-sign.png';
+import recipebookImage from './assets/story_scene/recipe-book.png';
+import explosionImage from './assets/story_scene/explosion-sprite-sheet.png';
+import ashesImage from './assets/story_scene/ashes.png';
 
-import pavibuttonImage from './assets/story_scene/Pavi_Button17.png';
-import pavibuttonpressedImage from './assets/story_scene/Pavi_Button6.png';
-import pavisadImage from './assets/story_scene/Pavi_Sad7.png';
-import pavisadImage2 from './assets/story_scene/Pavi_Sad5.png';
+import pavibuttonImage from './assets/story_scene/pavi-button-default.png';
+import pavibuttonpressedImage from './assets/story_scene/pavi-button-pressed.png';
+import pavisadImage from './assets/story_scene/pavi-sad-warning.png';
+import pavisadImage2 from './assets/story_scene/pavi-sad-after-explosion.png';
 
 
-import clickImage from './assets/story_scene/Click_Sound.png';
+import clickImage from './assets/story_scene/click-sound-visual.png';
 
 import alarmAudio from './assets/sounds/alarm.mp3';
 import announceAudio from './assets/sounds/announce.mp3';
 import explosionAudio from './assets/sounds/explosion.mp3';
 import rocketAudio from './assets/sounds/rocket.mp3';
 import clickAudio from './assets/sounds/click.mp3';
-import countdownAudio from './assets/sounds/countdown3.mp3';
+import countdownAudio from './assets/sounds/launch-countdown.mp3';
 
 export default class StoryScene extends Phaser.Scene {
   constructor() {

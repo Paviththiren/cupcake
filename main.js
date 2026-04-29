@@ -3,19 +3,19 @@ import Phaser from "phaser";
 
 import StoryScene from './story_scene.js'; 
 
-import bgImage from './assets/bg.png';
+import bgImage from './assets/kitchen-game-background.png';
 
 import TitleScene from './title_scene.js';
 
-import playerSpriteSheet from './assets/test_7.png';
+import playerSpriteSheet from './assets/player-sprite-sheet.png';
 
-import WallClock from './assets/wallclock.png';
-import handle from './assets/handle.png';
+import WallClock from './assets/wall-clock.png';
+import handle from './assets/clock-hand.png';
 
 import flourImage from './assets/ingredients/flour.png';
 import sugarImage from './assets/ingredients/sugar.png';
 import eggImage from './assets/ingredients/eggs.png';
-import blueberrysImage from './assets/ingredients/blueberrys.png';
+import blueberrysImage from './assets/ingredients/blueberries.png';
 import bootsImage from './assets/ingredients/boots.png';
 import butterImage from './assets/ingredients/butter.png';
 import caramelImage from './assets/ingredients/caramel.png';
@@ -30,20 +30,20 @@ import socksImage from './assets/ingredients/socks.png';
 import strawberryImage from './assets/ingredients/strawberry.png';
 import vanillaImage from './assets/ingredients/vanilla.png';
 import wormsImage from './assets/ingredients/worms.png';
-import currypowderImage from './assets/ingredients/suriya_curry_powder_350x350.png';
+import currypowderImage from './assets/ingredients/special-curry-powder.png';
 import tangerineImage from './assets/ingredients/tangerine.png';
 
-import throwLinesImage from './assets/throw_lines.png';
+import throwLinesImage from './assets/ingredient-throw-lines.png';
 
 
-import introBubbleImage from './assets/intro/Intro_Bubble.png';
-import arrowInstructionsImage from './assets/intro/arrow_ref.png';
-import watchClockImage from './assets/intro/time_ref.png';
-import clockArrowImage from './assets/intro/Clock_Arrow_resized.png';
-import pressSpaceImage from './assets/intro/press_ref.png';
-import endBubbleImage from './assets/intro/End_Bubble.png';
+import introBubbleImage from './assets/intro/intro-bubble.png';
+import arrowInstructionsImage from './assets/intro/move-instructions.png';
+import watchClockImage from './assets/intro/timer-instructions.png';
+import clockArrowImage from './assets/intro/clock-arrow.png';
+import pressSpaceImage from './assets/intro/spacebar-instructions.png';
+import endBubbleImage from './assets/intro/end-bubble.png';
 
-import CatchTimeImage from './assets/intro/Catch_Time_2.png';
+import CatchTimeImage from './assets/intro/catch-time-bubble.png';
 
 import QRCode, { create } from 'qrcode';
 

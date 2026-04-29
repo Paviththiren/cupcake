@@ -32,62 +32,79 @@ main {
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  gap: 20vw; /* was 400px */
+  align-items: center;
+  position: relative;
 }
 
-#gameCanvas {
-  border: 0.vw solid red;
-  border-radius: 0px; 
+#layoutShell {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 1710px;
+  height: 824px;
   transform: translate(-50%, -50%);
-  display: flex;
+  --shell-scale: 1;
+}
+
+#gameShell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1282px;
+  height: 824px;
+}
+
+#gameCanvas {
+  border: 0 solid red;
+  border-radius: 0px;
+  position: absolute;
+  top: 33px;
+  left: 33px;
+  width: 1218px;
+  height: 757px;
+  display: block;
   z-index: 1;
 }
 
 #recipeScroll {
-  position: relative;
-  left: 40.5vw; /* was 800px */
-  top: 15%;
-  width: 10vw; /* was 300px */
+  position: absolute;
+  left: 1290px;
+  top: 24px;
+  width: 420px;
   z-index: 10;
 
   display: none;
   flex-direction: column;
   align-items: center;
-  transform: scale(1);
+  pointer-events: none;
 }
 
 #scrollImage {
-  width: 22vw; /* was 140% of container */
+  width: 100%;
   height: auto;
   display: block;
 }
 
 #recipeText {
-  width: 130%;
-  margin-top: -21.5vw; /* was -420px */
+  position: absolute;
+  top: 108px;
+  left: 44px;
+  width: 330px;
+  max-height: 500px;
+  overflow: hidden;
   color: #4b2d0f;
   font-family: 'IM Fell English SC', 'Papyrus', fantasy;
-  font-size: 0.95vw; /* was 20px */
-  line-height: 1.2vw; /* was 25px */
+  font-size: clamp(13px, calc(29px * var(--shell-scale)), 34px);
+  line-height: clamp(16px, calc(33px * var(--shell-scale)), 38px);
   text-align: left;
-
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  gap: 0.01vw; /* was 12px */
 }
 
 #canvasFrame {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 1432px;
-  height: 1036px;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+  width: 1282px;
+  height: 824px;
   pointer-events: none;
   z-index: 2; /* Ensure it's above the gameCanvas */
 }

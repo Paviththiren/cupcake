@@ -48,9 +48,20 @@ import CatchTimeImage from './assets/intro/catch-time-bubble.png';
 import QRCode, { create } from 'qrcode';
 
 const sizes = {
+  width: 1218,
+  height: 757,
+};
+const baseGameSize = {
   width: 1152,
   height: 768,
 };
+const gameCanvas = document.getElementById("gameCanvas");
+const layoutShell = document.getElementById("layoutShell");
+const layoutBaseSize = {
+  width: 1710,
+  height: 824,
+};
+const gameFrameBaseWidth = 1282;
 
 const speedDown = 50;
 const playerMovementSpeed = 250;
@@ -95,7 +106,6 @@ class GameScene extends Phaser.Scene {
     this.game_stop = true;
     this.gpt_output = false;
     this.endBubbleShown = false;
-
   }
 
   preload() {
@@ -165,8 +175,8 @@ class GameScene extends Phaser.Scene {
 
 
     //Create Clock
-    const clockX = 860
-    const clockY = 150;
+    const clockX = Math.round((860 / baseGameSize.width) * sizes.width);
+    const clockY = Math.round((150 / baseGameSize.height) * sizes.height);
 
     this.add.image(clockX, clockY, 'WallClock').setScale(0.9);
     this.hourHand = this.add.image(clockX, clockY, 'handle').setScale(0.04);
@@ -198,12 +208,16 @@ class GameScene extends Phaser.Scene {
     
       const centerX = this.cameras.main.centerX;
       const centerY = this.cameras.main.centerY;
+      const uiScaleX = sizes.width / baseGameSize.width;
+      const uiScaleY = sizes.height / baseGameSize.height;
+      const offsetX = (value) => Math.round(value * uiScaleX);
+      const offsetY = (value) => Math.round(value * uiScaleY);
       
       const intro_images = [
-        this.add.image(centerX -85, centerY - 260, 'watchClock').setScale(0.5),
-        this.add.image(centerX + 180, centerY - 250, 'clockArrow').setScale(0.45).setRotation(Phaser.Math.DegToRad(65)),
-        this.add.image(centerX+180, centerY + 40, 'arrowInstructions').setScale(0.45),
-        this.add.image(centerX-250, centerY+300, 'pressSpace').setScale(0.5)
+        this.add.image(centerX + offsetX(-60), centerY + offsetY(-275), 'watchClock').setScale(0.5),
+        this.add.image(centerX + offsetX(190), centerY + offsetY(-270), 'clockArrow').setScale(0.45).setRotation(Phaser.Math.DegToRad(65)),
+        this.add.image(centerX + offsetX(170), centerY + offsetY(55), 'arrowInstructions').setScale(0.45),
+        this.add.image(centerX + offsetX(-250), centerY + offsetY(300), 'pressSpace').setScale(0.5)
       ];
       
       // Set initial alpha to 0 (invisible)
@@ -588,7 +602,7 @@ class GameScene extends Phaser.Scene {
   
     // Update UI
     document.getElementById("recipeText").innerHTML = `
-      <div style="display: flex; gap: 16px; width: 100%;">
+      <div style="display: flex; gap: 10px; width: 100%;">
         <div class="recipe-col">${col1}</div>
         <div class="recipe-col">${col2}</div>
       </div>
@@ -617,10 +631,26 @@ const config = {
       //debug: true,
     },
   },
-  scene: [TitleScene,StoryScene,GameScene],
+  scene: [/*TitleScene,StoryScene,*/GameScene],
 };
 
 const game = new Phaser.Game(config);
+
+function updateGameShellScale() {
+  if (!layoutShell) return;
+
+  const scaleX = (window.innerWidth * 0.9) / layoutBaseSize.width;
+  const scaleY = (window.innerHeight * 0.9) / layoutBaseSize.height;
+  const scale = Math.min(scaleX, scaleY);
+  const centerOffsetX = ((layoutBaseSize.width - gameFrameBaseWidth) / 2) * scale;
+
+  layoutShell.style.left = `calc(50% + ${centerOffsetX}px)`;
+  layoutShell.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  layoutShell.style.setProperty("--shell-scale", scale.toString());
+}
+
+updateGameShellScale();
+window.addEventListener("resize", updateGameShellScale);
 
 
 function generateQRCode(recipe) {

@@ -219,6 +219,8 @@ export default class StoryScene extends Phaser.Scene {
   }
 
   showStoryBox() {
+    this.hideStoryBox();
+
     if (this.storyBox) {
       this.storyBox.style.display = "block";
     }
@@ -259,9 +261,7 @@ export default class StoryScene extends Phaser.Scene {
   }
 
   showSecondStoryBox() {
-    if (this.storyBox) {
-      this.storyBox.style.display = "none";
-    }
+    this.hideStoryBox();
 
     if (this.storyBoxSecond) {
       this.storyBoxSecond.style.display = "block";
@@ -269,9 +269,7 @@ export default class StoryScene extends Phaser.Scene {
   }
 
   showThirdStoryBox() {
-    if (this.storyBoxSecond) {
-      this.storyBoxSecond.style.display = "none";
-    }
+    this.hideStoryBox();
 
     if (this.storyBoxThird) {
       this.storyBoxThird.style.display = "block";
@@ -279,9 +277,7 @@ export default class StoryScene extends Phaser.Scene {
   }
 
   showFourthStoryBox() {
-    if (this.storyBoxThird) {
-      this.storyBoxThird.style.display = "none";
-    }
+    this.hideStoryBox();
 
     if (this.storyBoxFourth) {
       this.storyBoxFourth.style.display = "block";
@@ -306,15 +302,13 @@ export default class StoryScene extends Phaser.Scene {
     this.narration2SecondStoryBoxTimer = this.time.delayedCall(12000, () => {
       this.showNarration2SecondStoryBox();
     });
-    this.narration2ThirdStoryBoxTimer = this.time.delayedCall(20000, () => {
+    this.narration2ThirdStoryBoxTimer = this.time.delayedCall(19000, () => {
       this.showNarration2ThirdStoryBox();
     });
   }
 
   showNarration2SecondStoryBox() {
-    if (this.storyBoxNarration2First) {
-      this.storyBoxNarration2First.style.display = "none";
-    }
+    this.hideStoryBox();
 
     if (this.storyBoxNarration2Second) {
       this.storyBoxNarration2Second.style.display = "block";
@@ -322,9 +316,7 @@ export default class StoryScene extends Phaser.Scene {
   }
 
   showNarration2ThirdStoryBox() {
-    if (this.storyBoxNarration2Second) {
-      this.storyBoxNarration2Second.style.display = "none";
-    }
+    this.hideStoryBox();
 
     if (this.storyBoxNarration2Third) {
       this.storyBoxNarration2Third.style.display = "block";
@@ -332,9 +324,7 @@ export default class StoryScene extends Phaser.Scene {
   }
 
   showNarration2FourthStoryBox() {
-    if (this.storyBoxNarration2Third) {
-      this.storyBoxNarration2Third.style.display = "none";
-    }
+    this.hideStoryBox();
 
     if (this.storyBoxNarration2Fourth) {
       this.storyBoxNarration2Fourth.style.display = "block";

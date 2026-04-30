@@ -65,10 +65,19 @@ export default class StoryScene extends Phaser.Scene {
   create() {
     this.skipButton = document.getElementById("storySkipButton");
     this.storyBox = document.getElementById("storyBox");
+    this.storyBoxSecond = document.getElementById("storyBoxSecond");
+    this.storyBoxThird = document.getElementById("storyBoxThird");
+    this.storyBoxFourth = document.getElementById("storyBoxFourth");
+    this.storyBoxNarration2First = document.getElementById("storyBoxNarration2First");
+    this.storyBoxNarration2Second = document.getElementById("storyBoxNarration2Second");
+    this.storyBoxNarration2Third = document.getElementById("storyBoxNarration2Third");
+    this.storyBoxNarration2Fourth = document.getElementById("storyBoxNarration2Fourth");
     this.skipHandler = () => this.skipStoryScene();
-    this.skipButton.addEventListener("click", this.skipHandler);
-    this.skipButton.style.display = "flex";
-    this.storyBox.style.display = "none";
+    this.skipButton?.addEventListener("click", this.skipHandler);
+    if (this.skipButton) {
+      this.skipButton.style.display = "flex";
+    }
+    this.hideStoryBox();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.teardownStoryScene, this);
 
     this.fadeOverlay = this.add.rectangle(0, 0, 1152, 768, 0x000000)
@@ -153,13 +162,19 @@ export default class StoryScene extends Phaser.Scene {
     this.storySceneNarration2Sound = this.sound.add('storySceneNarration2');
     this.inputsLocked = true;
     this.storySceneNarration1Sound.once('complete', () => {
-      this.hideStoryBox();
+      this.showFourthStoryBox();
       this.inputsLocked = false;
       this.spaceKey.reset();
     });
     this.time.delayedCall(2500, () => {
       this.showStoryBox();
       this.storySceneNarration1Sound.play({ loop: false, volume: 0.8 });
+      this.secondStoryBoxTimer = this.time.delayedCall(12000, () => {
+        this.showSecondStoryBox();
+      });
+      this.thirdStoryBoxTimer = this.time.delayedCall(23000, () => {
+        this.showThirdStoryBox();
+      });
     });
 
     // === States ===
@@ -196,6 +211,10 @@ export default class StoryScene extends Phaser.Scene {
     }
 
     this.hideStoryBox();
+    this.secondStoryBoxTimer?.remove(false);
+    this.thirdStoryBoxTimer?.remove(false);
+    this.narration2SecondStoryBoxTimer?.remove(false);
+    this.narration2ThirdStoryBoxTimer?.remove(false);
     this.stopStoryAudio();
   }
 
@@ -208,6 +227,117 @@ export default class StoryScene extends Phaser.Scene {
   hideStoryBox() {
     if (this.storyBox) {
       this.storyBox.style.display = "none";
+    }
+
+    if (this.storyBoxSecond) {
+      this.storyBoxSecond.style.display = "none";
+    }
+
+    if (this.storyBoxThird) {
+      this.storyBoxThird.style.display = "none";
+    }
+
+    if (this.storyBoxFourth) {
+      this.storyBoxFourth.style.display = "none";
+    }
+
+    if (this.storyBoxNarration2First) {
+      this.storyBoxNarration2First.style.display = "none";
+    }
+
+    if (this.storyBoxNarration2Second) {
+      this.storyBoxNarration2Second.style.display = "none";
+    }
+
+    if (this.storyBoxNarration2Third) {
+      this.storyBoxNarration2Third.style.display = "none";
+    }
+
+    if (this.storyBoxNarration2Fourth) {
+      this.storyBoxNarration2Fourth.style.display = "none";
+    }
+  }
+
+  showSecondStoryBox() {
+    if (this.storyBox) {
+      this.storyBox.style.display = "none";
+    }
+
+    if (this.storyBoxSecond) {
+      this.storyBoxSecond.style.display = "block";
+    }
+  }
+
+  showThirdStoryBox() {
+    if (this.storyBoxSecond) {
+      this.storyBoxSecond.style.display = "none";
+    }
+
+    if (this.storyBoxThird) {
+      this.storyBoxThird.style.display = "block";
+    }
+  }
+
+  showFourthStoryBox() {
+    if (this.storyBoxThird) {
+      this.storyBoxThird.style.display = "none";
+    }
+
+    if (this.storyBoxFourth) {
+      this.storyBoxFourth.style.display = "block";
+    }
+  }
+
+  startNarration2Sequence() {
+    this.hideStoryBox();
+    this.inputsLocked = true;
+
+    if (this.storyBoxNarration2First) {
+      this.storyBoxNarration2First.style.display = "block";
+    }
+
+    this.storySceneNarration2Sound.once('complete', () => {
+      this.showNarration2FourthStoryBox();
+      this.inputsLocked = false;
+      this.spaceKey.reset();
+    });
+    this.storySceneNarration2Sound.play({ loop: false, volume: 0.8 });
+
+    this.narration2SecondStoryBoxTimer = this.time.delayedCall(12000, () => {
+      this.showNarration2SecondStoryBox();
+    });
+    this.narration2ThirdStoryBoxTimer = this.time.delayedCall(20000, () => {
+      this.showNarration2ThirdStoryBox();
+    });
+  }
+
+  showNarration2SecondStoryBox() {
+    if (this.storyBoxNarration2First) {
+      this.storyBoxNarration2First.style.display = "none";
+    }
+
+    if (this.storyBoxNarration2Second) {
+      this.storyBoxNarration2Second.style.display = "block";
+    }
+  }
+
+  showNarration2ThirdStoryBox() {
+    if (this.storyBoxNarration2Second) {
+      this.storyBoxNarration2Second.style.display = "none";
+    }
+
+    if (this.storyBoxNarration2Third) {
+      this.storyBoxNarration2Third.style.display = "block";
+    }
+  }
+
+  showNarration2FourthStoryBox() {
+    if (this.storyBoxNarration2Third) {
+      this.storyBoxNarration2Third.style.display = "none";
+    }
+
+    if (this.storyBoxNarration2Fourth) {
+      this.storyBoxNarration2Fourth.style.display = "block";
     }
   }
 
@@ -251,6 +381,9 @@ export default class StoryScene extends Phaser.Scene {
       // Start liftoff on space key press
       if (spacePressed && !this.inputsLocked && !this.launch_pressed) {
         this.launch_pressed = true;
+        if (this.storyBoxFourth) {
+          this.storyBoxFourth.style.display = "none";
+        }
         this.countdownSound.play({ loop: false, volume: 0.2, rate: 1.05 });
         this.rocket.play('static');
         this.vibrationTween = this.tweens.addCounter({
@@ -369,7 +502,7 @@ export default class StoryScene extends Phaser.Scene {
             this.storySceneNarration1Sound.stop();
           }
           this.time.delayedCall(1500, () => {
-            this.storySceneNarration2Sound.play({ loop: false, volume: 0.8 });
+            this.startNarration2Sequence();
           });
           this.add.image(813, 512, "ashes").setOrigin(0.5).setScale(0.35);
           this.time.delayedCall(200, () => {

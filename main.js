@@ -382,7 +382,7 @@ class GameScene extends Phaser.Scene {
       this.endGame();
       this.time.delayedCall(3000, () => {
         const gameOverText = document.getElementById('gameOverText');
-        gameOverText.innerText = "Thinking..."; // ⏳ optional emoji
+        gameOverText.innerText = "Chibi-Pavi is thinking..."; // ⏳ optional emoji
 
         setTimeout(() => {
           getChatGPTFeedback(this.recipeMessage).then(feedback => {
@@ -725,6 +725,6 @@ async function getChatGPTFeedback(recipeText) {
     }
   } catch (err) {
     console.error("Fetch failed:", err);
-    return "Error connecting to feedback server.";
+    return "I don't know what to say. Try again later.";
   }
 }

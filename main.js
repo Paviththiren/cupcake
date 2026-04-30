@@ -133,6 +133,8 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
+    document.getElementById("storyBox").style.display = "none";
+    document.getElementById("storySkipButton").style.display = "none";
     document.getElementById('recipeScroll').style.display = 'flex';
     this.add.image(0, 0, "bg").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height);
 

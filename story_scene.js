@@ -63,6 +63,14 @@ export default class StoryScene extends Phaser.Scene {
 
   }
   create() {
+    this.skipButton = document.getElementById("storySkipButton");
+    this.storyBox = document.getElementById("storyBox");
+    this.skipHandler = () => this.skipStoryScene();
+    this.skipButton.addEventListener("click", this.skipHandler);
+    this.skipButton.style.display = "flex";
+    this.storyBox.style.display = "none";
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.teardownStoryScene, this);
+
     this.fadeOverlay = this.add.rectangle(0, 0, 1152, 768, 0x000000)
       .setOrigin(0)
       .setAlpha(1)
@@ -145,10 +153,12 @@ export default class StoryScene extends Phaser.Scene {
     this.storySceneNarration2Sound = this.sound.add('storySceneNarration2');
     this.inputsLocked = true;
     this.storySceneNarration1Sound.once('complete', () => {
+      this.hideStoryBox();
       this.inputsLocked = false;
       this.spaceKey.reset();
     });
     this.time.delayedCall(2500, () => {
+      this.showStoryBox();
       this.storySceneNarration1Sound.play({ loop: false, volume: 0.8 });
     });
 
@@ -177,6 +187,53 @@ export default class StoryScene extends Phaser.Scene {
 
 
 
+  }
+
+  teardownStoryScene() {
+    if (this.skipButton) {
+      this.skipButton.style.display = "none";
+      this.skipButton.removeEventListener("click", this.skipHandler);
+    }
+
+    this.hideStoryBox();
+    this.stopStoryAudio();
+  }
+
+  showStoryBox() {
+    if (this.storyBox) {
+      this.storyBox.style.display = "block";
+    }
+  }
+
+  hideStoryBox() {
+    if (this.storyBox) {
+      this.storyBox.style.display = "none";
+    }
+  }
+
+  stopStoryAudio() {
+    const sounds = [
+      this.rocketAscentSound,
+      this.explosionSound,
+      this.alarmSound,
+      this.announceSound,
+      this.clickSound,
+      this.countdownSound,
+      this.storySceneNarration1Sound,
+      this.storySceneNarration2Sound,
+    ];
+
+    sounds.forEach((sound) => {
+      if (sound?.isPlaying) {
+        sound.stop();
+      }
+    });
+  }
+
+  skipStoryScene() {
+    this.hideStoryBox();
+    this.stopStoryAudio();
+    this.scene.start("scene-game");
   }
 
   update(time, delta) {

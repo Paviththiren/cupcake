@@ -617,6 +617,11 @@ const config = {
       //debug: true,
     },
   },
+  callbacks: {
+    postBoot: (game) => {
+      game.sound.pauseOnBlur = false;
+    },
+  },
   scene: [TitleScene,StoryScene,GameScene],
 };
 

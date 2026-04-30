@@ -21,6 +21,8 @@ import explosionAudio from './assets/sounds/explosion.mp3';
 import rocketAudio from './assets/sounds/rocket.mp3';
 import clickAudio from './assets/sounds/click.mp3';
 import countdownAudio from './assets/sounds/countdown3.mp3';
+import storySceneNarration1Audio from './assets/sounds/Story_Scene_Narration_1.mp3';
+import storySceneNarration2Audio from './assets/sounds/Story_Scene_Narration_2.mp3';
 
 export default class StoryScene extends Phaser.Scene {
   constructor() {
@@ -48,6 +50,8 @@ export default class StoryScene extends Phaser.Scene {
     this.load.audio("rocket", rocketAudio);
     this.load.audio("click", clickAudio);
     this.load.audio("countdown", countdownAudio);
+    this.load.audio("storySceneNarration1", storySceneNarration1Audio);
+    this.load.audio("storySceneNarration2", storySceneNarration2Audio);
 
     this.load.image("pavibutton", pavibuttonImage);
     this.load.image("pavisad", pavisadImage);
@@ -68,7 +72,7 @@ export default class StoryScene extends Phaser.Scene {
     this.tweens.add({
       targets: this.fadeOverlay,
       alpha: 0,
-      duration: 3500, // 2 seconds fade-in
+      duration: 2500, // 2 seconds fade-in
       onComplete: () => {
       this.fadeOverlay.destroy(); // optional cleanup
     }
@@ -107,11 +111,6 @@ export default class StoryScene extends Phaser.Scene {
 
 
 
-    this.add.text(576, 700, "Press [Space] to Launch", {
-      font: "20px IM Fell English",
-      fill: "#fceabb"
-    }).setOrigin(0.5);
-
     this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     // === Rocket setup ===
@@ -142,6 +141,16 @@ export default class StoryScene extends Phaser.Scene {
     this.announceSound = this.sound.add('announce');
     this.clickSound = this.sound.add('click');
     this.countdownSound = this.sound.add('countdown');
+    this.storySceneNarration1Sound = this.sound.add('storySceneNarration1');
+    this.storySceneNarration2Sound = this.sound.add('storySceneNarration2');
+    this.inputsLocked = true;
+    this.storySceneNarration1Sound.once('complete', () => {
+      this.inputsLocked = false;
+      this.spaceKey.reset();
+    });
+    this.time.delayedCall(2500, () => {
+      this.storySceneNarration1Sound.play({ loop: false, volume: 0.8 });
+    });
 
     // === States ===
     this.phase = 'static'; // 'idle' → 'liftoff' → 'wait' → 'descent' → 'done'
@@ -172,6 +181,7 @@ export default class StoryScene extends Phaser.Scene {
 
   update(time, delta) {
     const dt = delta / 1000;
+    const spacePressed = Phaser.Input.Keyboard.JustDown(this.spaceKey);
 
     // === PHASE: idle ===
     if (this.phase === 'static') {
@@ -182,9 +192,9 @@ export default class StoryScene extends Phaser.Scene {
       
     
       // Start liftoff on space key press
-      if (Phaser.Input.Keyboard.JustDown(this.spaceKey) && !this.launch_pressed) {
+      if (spacePressed && !this.inputsLocked && !this.launch_pressed) {
         this.launch_pressed = true;
-        this.countdownSound.play({ loop: false, volume: 0.2, rate: 1.0 });
+        this.countdownSound.play({ loop: false, volume: 0.2, rate: 1.05 });
         this.rocket.play('static');
         this.vibrationTween = this.tweens.addCounter({
           from: -1,
@@ -298,6 +308,12 @@ export default class StoryScene extends Phaser.Scene {
         }
         );
         this.time.delayedCall(850, () => {
+          if (this.storySceneNarration1Sound.isPlaying) {
+            this.storySceneNarration1Sound.stop();
+          }
+          this.time.delayedCall(1500, () => {
+            this.storySceneNarration2Sound.play({ loop: false, volume: 0.8 });
+          });
           this.add.image(813, 512, "ashes").setOrigin(0.5).setScale(0.35);
           this.time.delayedCall(200, () => {
           this.pavisad.destroy();
@@ -321,7 +337,7 @@ export default class StoryScene extends Phaser.Scene {
     }
 
     // === GAME START ===
-    if (this.phase === 'done' && Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+    if (this.phase === 'done' && spacePressed && !this.inputsLocked) {
       this.scene.start("scene-game");
     }
   }
